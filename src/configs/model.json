@@ -44,15 +44,12 @@
     "report_train": true
   },
   "active_learning": {
-    "enabled": false,
-    "initial_fraction": 0.3,
+    "acquisitions": ["random", "variance", "ei_max"],
+    "initial_fraction": 0.30,
     "query_size": 50,
     "n_iterations": 5,
-    "acquisition": "ei",
-    "xi": 0.01
+    "test_fraction": 0.20,
+    "max_train": 800,
+    "ei_xi": 0.01
   }
 }
-
-
-
-
