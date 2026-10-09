@@ -157,10 +157,18 @@ def simulate_active_learning(
     history: List[ALIteration] = []
 
     for it in range(n_iterations + 1):
-        # Optionally subsample the labelled set to keep GPR tractable
+        # Optionally subsample the labelled set to keep GPR tractable.
+        # IMPORTANT: use a *separate* RNG for subsampling so that all
+        # acquisition functions see the same training subsample in any given
+        # iteration.  Without this fix the `random` strategy (which calls
+        # ``rng.random`` during scoring) would consume RNG state that the
+        # `variance` / `ei_max` strategies never touch, leading to different
+        # GPR training sets across acquisitions -- which makes the AL
+        # comparison noisy and methodologically invalid.
         train_idx = labeled_idx
         if max_train is not None and len(train_idx) > max_train:
-            sub = rng.choice(train_idx, size=max_train, replace=False)
+            sub_rng = np.random.default_rng(random_state + 7919)  # fresh, independent
+            sub = sub_rng.choice(train_idx, size=max_train, replace=False)
             train_idx = sub.tolist()
 
         X_train = X[train_idx]

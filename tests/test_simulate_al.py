@@ -136,3 +136,37 @@ def test_simulate_al_small_dataset_raises():
     X = np.zeros((3, 2)); y = np.zeros(3); groups = np.array([0, 0, 0])
     with pytest.raises(ValueError):
         simulate_active_learning(X, y, groups, gpr_factory=lambda: None)
+
+
+def test_simulate_al_subsample_is_rng_acquisition_independent():
+    """With ``max_train`` active, all acquisitions MUST see the same
+    initial labelled subsample -- otherwise the AL comparison is invalid.
+    """
+    rng = np.random.default_rng(0)
+    n = 200
+    X = rng.normal(size=(n, 3))
+    y = X.sum(axis=1) + 0.1 * rng.normal(size=n)
+    groups = np.tile(np.arange(8), n // 8)
+    init_r2 = []
+    for acq in ("random", "variance", "ei_max"):
+        hist = simulate_active_learning(
+            X=X, y=y, groups=groups,
+            gpr_factory=lambda: FlatModelProbe(),
+            acquisition=acq,
+            initial_fraction=0.3, query_size=20, n_iterations=1,
+            test_fraction=0.2, max_train=10, random_state=42,
+        )
+        init_r2.append(hist[0].test_r2)
+    spread = max(init_r2) - min(init_r2)
+    assert spread < 1e-6, f"initial R^2 differ by {spread} -- subsample bug regressed!"
+
+
+class FlatModelProbe:
+    """Same as FlatModel in run_simulate_al.py -- here for self-containment."""
+    def __init__(self):
+        from sklearn.linear_model import LinearRegression
+        self.m = LinearRegression()
+    def fit(self, X, y): self.m.fit(X, y); return self
+    def predict(self, X, return_std=False):
+        p = self.m.predict(X)
+        return (p, np.zeros_like(p)) if return_std else p

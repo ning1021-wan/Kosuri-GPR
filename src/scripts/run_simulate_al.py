@@ -25,6 +25,7 @@ import os
 import sys
 from typing import Dict, List
 
+import numpy as np
 import pandas as pd
 
 # scripts/run_simulate_al.py -> feature_engineering/  (2 levels up from src/scripts)
@@ -158,3 +159,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
