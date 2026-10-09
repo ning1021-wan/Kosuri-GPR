@@ -28,19 +28,37 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          echo "---- Installed package versions ----"
-          python -c "import numpy, pandas, sklearn, scipy; print(f'numpy {numpy.__version__}, pandas {pandas.__version__}, sklearn {sklearn.__version__}, scipy {scipy.__version__}')"
 
-      - name: Compile + import sanity check
+      - name: Show directory layout
         run: |
-          # py_compile is more forgiving than compileall for fresh checkouts.
+          echo "PWD: $(pwd)"
+          ls -la
+          echo "--- src/ ---"
+          ls -la src/
+          echo "--- src/evaluation ---"
+          ls -la src/evaluation/
+          echo "--- tests/ ---"
+          ls -la tests/
+
+      - name: Compile every .py file
+        run: |
           set -e
           for f in $(find src tests -name "*.py" -type f); do
-            python -m py_compile "$f" && echo "OK $f"
+            python -m py_compile "$f" || { echo "COMPILE FAIL: $f"; exit 1; }
           done
-          # Also make sure every src.* module imports cleanly (catches top-level bugs).
-          PYTHONPATH=. python -c "import src.evaluation.nullsette, src.models.group_cv; print('imports OK')"
+          echo "All files compile cleanly."
+
+      - name: Verify src imports work
+        run: |
+          PYTHONPATH=. python -c "
+          import src.evaluation.nullsette as ns
+          import src.models.group_cv as gc
+          print('nullsette:', ns.HEADER_RE.pattern[:30])
+          print('group_cv:', gc.compute_metrics.__name__)
+          "
 
       - name: Unit tests
+        env:
+          PYTHONPATH: .
         run: |
-          PYTHONPATH=. pytest tests/test_helpers.py -v --tb=short -p no:cacheprovider
+          python -m pytest tests/test_helpers.py -v --tb=short -p no:cacheprovider --no-header
