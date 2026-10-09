@@ -1,0 +1,31 @@
+services:
+  api:
+    build: .
+    image: kosuri-gpr-seq2expr:latest
+    container_name: kosuri-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src/runs:/app/src/runs     # so trained artefacts created on host are picked up
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  ui:
+    image: kosuri-gpr-seq2expr:latest
+    container_name: kosuri-ui
+    depends_on:
+      - api
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./src/runs:/app/src/runs
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: ["streamlit", "run", "src/ui/streamlit_app.py",
+              "--server.port=8501", "--server.address=0.0.0.0"]

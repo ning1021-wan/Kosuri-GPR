@@ -1,0 +1,45 @@
+{
+  "promoter": [
+    "prom__gc_content",
+    "prom__at_content",
+    "prom__gc_skew",
+    "prom__length",
+    "prom__complexity",
+    "prom__mfe",
+    "prom__score_minus35",
+    "prom__score_minus10",
+    "prom__gc_motif_density",
+    "prom__at_motif_density"
+  ],
+  "rbs": [
+    "rbs__gc_content",
+    "rbs__at_content",
+    "rbs__gc_skew",
+    "rbs__length",
+    "rbs__complexity",
+    "rbs__mfe",
+    "rbs__sd_best_score",
+    "rbs__sd_present",
+    "rbs__spacer_gc",
+    "rbs__spacer_length"
+  ],
+  "exclude_columns": [
+    "Strain",
+    "F-on/OD",
+    "Sequence",
+    "mean.RNA",
+    "mean.prot",
+    "seq_clean",
+    "core_seq",
+    "F_on_OD",
+    "F_on_OD_log",
+    "rbs_seq",
+    "promoter_id",
+    "rbs_id",
+    "pair_id",
+    "expression_log2",
+    "expression_raw",
+    "promoter_name",
+    "rbs_name"
+  ]
+}

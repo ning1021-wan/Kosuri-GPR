@@ -1,0 +1,38 @@
+{
+  "name": "kosuri_2013",
+  "version": "1.0.0",
+  "dataset_type": "paired",
+  "source": {
+    "paper": "Kosuri et al. 2013, PNAS, 110:14024-14029",
+    "pmc": "PMC3752251",
+    "sheets": {
+      "sd01": "promoter table (112 promoters with sequences)",
+      "sd02": "RBS table (111 RBSs with sequences)",
+      "sd03": "paired measurements (12,655 combinations with protein/RNA/DNA)"
+    }
+  },
+  "paths": {
+    "features_promoter_csv": "data/processed/promoter_features_optimized.csv",
+    "features_rbs_csv": "data/processed/rbs_features_optimized.csv",
+    "paired_csv": "src/data/kosuri_paired.csv"
+  },
+  "columns": {
+    "promoter_id_col": "promoter_id",
+    "rbs_id_col": "rbs_id",
+    "group_col": "promoter_id",
+    "target_log2": "expression_log2",
+    "target_raw": "expression_raw"
+  },
+  "split": {
+    "type": "group_kfold",
+    "n_splits": 10,
+    "seed": 42
+  },
+  "qc": {
+    "drop_when_any_of": ["bad.prot", "bad.DNA", "bad.RNA", "bad.promo"],
+    "drop_controls": {
+      "promoter_name": "Nopromoter",
+      "rbs_name": "DeadRBS"
+    }
+  }
+}

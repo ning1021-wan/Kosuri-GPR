@@ -1,0 +1,58 @@
+{
+  "gpr": {
+    "kernel": {
+      "type": "rbf_white",
+      "constant": 1.0,
+      "length_scale": 1.0,
+      "noise_level": 0.1,
+      "noise_bounds": [1e-5, 10.0]
+    },
+    "n_restarts_optimizer": 1,
+    "alpha": 0.01,
+    "normalize_y": false,
+    "random_state": 42
+  },
+  "baselines": {
+    "random_forest": {
+      "enabled": true,
+      "n_estimators": 300,
+      "max_depth": null,
+      "min_samples_leaf": 2,
+      "n_jobs": 1,
+      "random_state": 42
+    },
+    "xgboost": {
+      "enabled": false,
+      "install_required": true,
+      "n_estimators": 300,
+      "max_depth": 6,
+      "learning_rate": 0.05,
+      "random_state": 42
+    },
+    "svr": {
+      "enabled": false,
+      "kernel": "rbf",
+      "C": 1.0,
+      "epsilon": 0.05,
+      "gamma": "scale"
+    }
+  },
+  "evaluation": {
+    "metrics": ["r2", "rmse", "mae", "pearson"],
+    "cv_n_splits": 5,
+    "cv_seed": 42,
+    "report_train": true
+  },
+  "active_learning": {
+    "enabled": false,
+    "initial_fraction": 0.3,
+    "query_size": 50,
+    "n_iterations": 5,
+    "acquisition": "ei",
+    "xi": 0.01
+  }
+}
+
+
+
+
