@@ -141,13 +141,19 @@ so the numbers are *honest* estimates of out-of-promoter generalisation.
 
 ### OOD uncertainty (Nullsette benchmark)
 
-| | Normal (n=1015) | Nullsette (n=15913) | KS p-value |
-|---|---|---|---|
-| Predicted expression (log2) | 11.94 +/- 2.59 | 9.19 +/- 2.72 | 2.77e-233 |
-| **Predictive std (uncertainty)** | **3.68 +/- 0.57** | **3.96 +/- 0.42** | **3.19e-134** |
+All 19 element-translocation variants are now usable (the adaptive window
+in `split_cassette_by_atg` shrinks when the ATG sits very close to the
+start of the cassette, as in heavily-translocated variants 16/17/18).
 
-Nullsettes receive **+7.5% higher predictive std**, confirming that the
-GPR correctly identifies out-of-distribution sequences as uncertain.
+| | Normal (n=1450) | Nullsette (n=27571) | KS p-value |
+|---|---|---|---|
+| Predicted expression (log2) | 11.31 +/- 3.01 | 9.17 +/- 2.86 | 8.13e-183 |
+| **Predictive std (uncertainty)** | **4.41 +/- 1.35** | **5.08 +/- 1.61** | **1.19e-129** |
+
+Nullsettes receive **+15.3% higher predictive std**; the most aggressive
+translocation variants (16/17/18) push std to **7.78** (a **+76%**
+inflation over normal), confirming that the GPR correctly identifies
+out-of-distribution sequences as uncertain.
 
 ---
 
@@ -273,3 +279,4 @@ the training set.
 ## License
 
 MIT
+

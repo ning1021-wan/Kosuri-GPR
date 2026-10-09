@@ -93,9 +93,21 @@ def test_split_cassette_by_atg():
 
 
 def test_split_cassette_by_atg_too_short():
+    # Even with min_prom=5/min_rbs=5 we need at least 10 bases before ATG.
     seq = "ATGAA"
-    prom, rbs = split_cassette_by_atg(seq)
+    prom, rbs = split_cassette_by_atg(seq, prom_window=25, rbs_window=25,
+                                     min_prom=5, min_rbs=5)
     assert prom is None and rbs is None
+
+
+def test_split_cassette_by_atg_short_clamps():
+    # Short ATG distance should fall back to clamped windows.
+    seq = "A" * 18 + "ATG" + "C" * 50
+    prom, rbs = split_cassette_by_atg(seq, prom_window=25, rbs_window=25,
+                                     min_prom=5, min_rbs=5)
+    assert prom is not None and rbs is not None
+    assert len(prom) >= 5 and len(rbs) >= 5
+    assert len(prom) + len(rbs) == 18
 
 
 def test_split_cassette_by_atg_no_atg():

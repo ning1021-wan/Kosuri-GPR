@@ -123,8 +123,10 @@ def load_nullsettes(kosuri_text_dir: str) -> Tuple[Dict, Dict[int, Dict]]:
 # ----------------------------------------------------------------------
 def split_cassette_by_atg(seq: str,
                           prom_window: int = 25,
-                          rbs_window: int = 25) -> Tuple[Optional[str], Optional[str]]:
-    """Find the FIRST ATG (CDS start codon) and carve out fixed windows before it.
+                          rbs_window: int = 25,
+                          min_prom: int = 5,
+                          min_rbs: int = 5) -> Tuple[Optional[str], Optional[str]]:
+    """Find the FIRST ATG (CDS start codon) and carve out windows before it.
 
     Kosuri cassettes do NOT contain the NdeI CATATG motif -- the RBS is
     assembled so the ATG start codon appears immediately after the
@@ -132,16 +134,27 @@ def split_cassette_by_atg(seq: str,
     anchor, then take a fixed-width RBS window right before it and a
     promoter window right before that.
 
-    Returns (prom_subseq, rbs_subseq) or (None, None) if the ATG is too
-    close to the start of the sequence for the windows to fit.
+    For heavily-translocated Nullsette variants (16/17/18) the ATG may sit
+    very close to the start of the cassette; we shrink the windows so that
+    we still extract *some* features rather than dropping the row entirely.
+    Both windows are clamped at ``min_prom`` and ``min_rbs``.
+
+    Returns (prom_subseq, rbs_subseq) or (None, None) if the ATG is absent
+    or there is not enough sequence left of it.
     """
     atg = seq.find("ATG")
     if atg < 0:
         return None, None
-    if atg < (prom_window + rbs_window):
-        return None, None
-    rbs_subseq = seq[atg - rbs_window:atg]
-    prom_subseq = seq[atg - prom_window - rbs_window:atg - rbs_window]
+    if atg >= prom_window + rbs_window:
+        rbs_w = rbs_window
+        prom_w = prom_window
+    else:
+        rbs_w = min(rbs_window, max(min_rbs, atg - min_prom))
+        prom_w = atg - rbs_w
+        if prom_w < min_prom or rbs_w < min_rbs:
+            return None, None
+    rbs_subseq = seq[atg - rbs_w:atg]
+    prom_subseq = seq[atg - rbs_w - prom_w:atg - rbs_w]
     return prom_subseq, rbs_subseq
 def _feature_dict_from_subseq(prom_subseq: str, rbs_subseq: str) -> Dict[str, float]:
     """Compute the 20-feature dict used by the GPR model from raw subsequences.
