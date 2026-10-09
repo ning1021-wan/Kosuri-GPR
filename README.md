@@ -157,6 +157,34 @@ out-of-distribution sequences as uncertain.
 
 ---
 
+
+### Active learning: a 3-run study (honest negative result)
+
+`src/evaluation/simulate_al.py` benchmarks GPR uncertainty-driven active
+learning against uniform random sampling on the Kosuri dataset, with
+three acquisition functions (`random` / `variance` / `ei_max`).
+
+> **Headline finding (3 runs, different query sizes + seeds):** the
+> absolute R^2 gap between strategies is at most **0.04**, and the
+> ordering is **not stable** across seeds. Pure-exploration acquisitions
+> (`variance`) help in the first few rounds but can hurt later once the
+> model is well-trained. This is a textbook active-learning failure
+> mode, not a code bug.
+
+The honest, interviewable summary:
+
+> We benchmarked GPR uncertainty-driven active learning against uniform
+> random sampling across 3 runs (different query sizes + seeds). The
+> gap is **marginal and seed-dependent** (≤ 0.04 R^2), with `variance` /
+> `ei_max` sometimes winning, sometimes losing. This matches the textbook
+> observation that pure-exploration AL has diminishing returns once the
+> labelled budget exceeds ~30% of the data.
+
+Full per-run traces, the per-iteration degradation pattern, and the
+methodology checks are in
+**[`docs/active_learning_findings.md`](docs/active_learning_findings.md)**.
+
+![Active learning curves (seed=42, 8x150)](docs/images/learning_curves.png)
 ## How to run
 
 ### Option A -- one command (recommended)
@@ -279,4 +307,5 @@ the training set.
 ## License
 
 MIT
+
 
