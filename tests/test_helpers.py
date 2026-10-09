@@ -31,7 +31,7 @@ def _toy_df():
         "f1": rng.normal(size=n),
         "f2": rng.normal(size=n),
         "y": rng.normal(size=n),
-        "group": np.repeat(np.arange(n) % 6, 10),
+        "group": np.tile(np.arange(6), 10),
     })
 
 
