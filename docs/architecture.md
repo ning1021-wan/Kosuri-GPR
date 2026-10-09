@@ -129,7 +129,7 @@ flowchart LR
     K1 --> GPR_K
     K2 --> GPR_K
     K3 --> GPR_K
-    GPR_K -->|predict(mean, std)| N1
+    GPR_K -->|predict mean + std| N1
     GPR_K -->|predict on unlabelled| A1
     GPR_K -->|predict on held-out| A2
 ```
@@ -168,3 +168,4 @@ flowchart LR
   `run_simulate_al.py`) also writes per-run metrics and a `config
   snapshot` -- the job-application story "I can show exactly what I
   ran" is a property of the codebase, not a manual step.
+
