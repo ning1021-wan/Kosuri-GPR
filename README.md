@@ -185,6 +185,32 @@ methodology checks are in
 **[`docs/active_learning_findings.md`](docs/active_learning_findings.md)**.
 
 ![Active learning curves (seed=42, 8x150)](docs/images/learning_curves.png)
+
+## Architecture
+
+The project is a strict three-layer pipeline:
+
+```
+PNAS .xls  ->  .xlsx  ->  paired_dataset.csv
+                              |
+                              v
+            run_experiment.py   run_nullsette.py   run_simulate_al.py
+            (GPR + RF + CV)     (19 OOD mutants)   (3-seed AL sim)
+                              |
+                              v
+            final_gpr.joblib
+                  |
+       +----------+----------+
+       v                     v
+   FastAPI :8000       Streamlit :8501
+   (REST)              (5-page dashboard)
+       \________  ________/
+                \/
+        docker compose up
+```
+
+Full architecture (Mermaid diagrams, layer rationale, data lineage)
+in **[`docs/architecture.md`](docs/architecture.md)**.
 ## How to run
 
 ### Option A -- one command (recommended)
@@ -307,5 +333,6 @@ the training set.
 ## License
 
 MIT
+
 
 
